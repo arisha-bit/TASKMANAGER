@@ -1,0 +1,51 @@
+# Python cache and environment
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.env
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# FastAPI / Python related
+*.sqlite3
+*.db
+*.log
+
+# Jinja2 / templates / static cache (optional)
+*.pyc
+*.pyo
+
+# Node / Frontend (if any node modules)
+node_modules/
+
+# Secrets / config files
+config.json
+credentials.json
+token.json
+client_secret.json
+
+# Mac specific
+.AppleDouble
+.LSOverride
+
+# Backup files
+*.bak
+*.swp
+*~
+
+# VS Code settings (optional)
+.vscode/

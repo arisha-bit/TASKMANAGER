@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Upload Results - Task Manager Pro{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="results-header">
+        <div class="results-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2>Upload Results</h2>
+        {% if message %}
+        <div class="success-message">
+            <i class="fas fa-info-circle"></i>
+            {{ message }}
+        </div>
+        {% endif %}
+        {% if error %}
+        <div class="error-message">
+            <i class="fas fa-exclamation-triangle"></i>
+            {{ error }}
+        </div>
+        {% endif %}
+    </div>
+
+    {% if tasks %}
+    <div class="tasks-section">
+        <h3 class="section-title">
+            <i class="fas fa-list-check"></i>
+            Extracted Tasks ({{ tasks|length }})
+        </h3>
+        
+        <div class="tasks-grid">
+            {% for task in tasks %}
+            <div class="task-card extracted">
+                <div class="task-header">
+                    <div class="task-priority {{ task.priority if task.priority else 'medium' }}">
+                        <i class="fas fa-flag"></i>
+                        {{ task.priority if task.priority else 'medium' }}
+                    </div>
+                    <div class="task-date">
+                        <i class="fas fa-calendar"></i>
+                        {{ task.date }}
+                    </div>
+                </div>
+                
+                <div class="task-content">
+                    <h4 class="task-title">{{ task.title }}</h4>
+                    {% if task.original_text %}
+                    <p class="task-original">
+                        <strong>Original text:</strong> {{ task.original_text[:100] }}{% if task.original_text|length > 100 %}...{% endif %}
+                    </p>
+                    {% endif %}
+                    {% if task.extracted_at %}
+                    <p class="task-extracted">
+                        <small>Extracted: {{ task.extracted_at[:10] }}</small>
+                    </p>
+                    {% endif %}
+                </div>
+                
+                <div class="task-actions">
+                    <a href="/tasks" class="btn btn-primary">
+                        <i class="fas fa-eye"></i>
+                        View All Tasks
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="actions-section">
+            <a href="/" class="btn btn-secondary">
+                <i class="fas fa-upload"></i>
+                Upload Another Image
+            </a>
+            <a href="/tasks" class="btn btn-primary">
+                <i class="fas fa-tasks"></i>
+                Manage Tasks
+            </a>
+            <a href="/dashboard" class="btn btn-success">
+                <i class="fas fa-chart-bar"></i>
+                View Dashboard
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="no-tasks-section">
+        <div class="no-tasks-icon">
+            <i class="fas fa-search"></i>
+        </div>
+        <h3>No Tasks Found</h3>
+        <p>We couldn't extract any tasks from your image. This might be due to:</p>
+        <ul class="troubleshooting-list">
+            <li>Image quality is too low</li>
+            <li>Text is not clearly visible</li>
+            <li>No dates were detected in the image</li>
+            <li>Image format is not supported</li>
+        </ul>
+        
+        <div class="actions-section">
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-upload"></i>
+                Try Another Image
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

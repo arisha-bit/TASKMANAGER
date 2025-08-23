@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+{% block title %}Home - Task Manager Pro{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-content">
+        <h2 class="hero-title">
+            <i class="fas fa-magic"></i>
+            Extract Tasks from Images
+        </h2>
+        <p class="hero-subtitle">
+            Upload your datasheets, schedules, or any image with text and automatically extract tasks with dates.
+            Powered by advanced OCR technology.
+        </p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="upload-section">
+        <div class="upload-card">
+            <div class="upload-header">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h3>Upload Your Image</h3>
+                <p>Supported formats: JPG, PNG, GIF, BMP, TIFF</p>
+            </div>
+            
+            <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form" id="uploadForm">
+                <div class="file-upload-area" id="fileUploadArea">
+                    <div class="upload-icon">
+                        <i class="fas fa-image"></i>
+                    </div>
+                    <p class="upload-text">Drag & drop your image here or click to browse</p>
+                    <input type="file" name="file" id="fileInput" accept="image/*" required class="file-input">
+                    <button type="button" class="browse-btn" onclick="document.getElementById('fileInput').click()">
+                        Browse Files
+                    </button>
+                </div>
+                
+                <div class="upload-preview" id="uploadPreview" style="display: none;">
+                    <img id="previewImage" src="" alt="Preview" class="preview-image">
+                    <div class="preview-info">
+                        <span id="fileName"></span>
+                        <button type="button" class="remove-file" onclick="removeFile()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" class="upload-btn" id="uploadBtn" disabled>
+                    <i class="fas fa-rocket"></i>
+                    Extract Tasks
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {% if stats %}
+    <div class="stats-section">
+        <h3 class="section-title">
+            <i class="fas fa-chart-pie"></i>
+            Quick Overview
+        </h3>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon total">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>Total Tasks</h4>
+                    <p class="stat-number">{{ stats.total }}</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon pending">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>Pending</h4>
+                    <p class="stat-number">{{ stats.pending }}</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon completed">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>Completed</h4>
+                    <p class="stat-number">{{ stats.completed }}</p>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon progress">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <div class="stat-content">
+                    <h4>Progress</h4>
+                    <p class="stat-number">{{ "%.1f"|format(stats.completion_rate) }}%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="features-section">
+        <h3 class="section-title">
+            <i class="fas fa-star"></i>
+            Key Features
+        </h3>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <h4>Smart OCR</h4>
+                <p>Advanced image processing to extract text from any image format</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h4>Date Recognition</h4>
+                <p>Automatically detects and parses various date formats</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-sync"></i>
+                </div>
+                <h4>Google Sync</h4>
+                <p>Seamlessly sync with Google Calendar and Tasks</p>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h4>MongoDB Storage</h4>
+                <p>Robust data storage with advanced querying capabilities</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('fileInput');
+    const fileUploadArea = document.getElementById('fileUploadArea');
+    const uploadPreview = document.getElementById('uploadPreview');
+    const previewImage = document.getElementById('previewImage');
+    const fileName = document.getElementById('fileName');
+    const uploadBtn = document.getElementById('uploadBtn');
+    
+    // Drag and drop functionality
+    fileUploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        fileUploadArea.classList.add('dragover');
+    });
+    
+    fileUploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        fileUploadArea.classList.remove('dragover');
+    });
+    
+    fileUploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        fileUploadArea.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleFile(files[0]);
+        }
+    });
+    
+    fileInput.addEventListener('change', function(e) {
+        if (e.target.files.length > 0) {
+            handleFile(e.target.files[0]);
+        }
+    });
+    
+    function handleFile(file) {
+        if (!file.type.startsWith('image/')) {
+            alert('Please select an image file.');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImage.src = e.target.result;
+            fileName.textContent = file.name;
+            fileUploadArea.style.display = 'none';
+            uploadPreview.style.display = 'block';
+            uploadBtn.disabled = false;
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    function removeFile() {
+        fileInput.value = '';
+        fileUploadArea.style.display = 'block';
+        uploadPreview.style.display = 'none';
+        uploadBtn.disabled = true;
+    }
+    
+    // Make removeFile function global
+    window.removeFile = removeFile;
+});
+</script>
+{% endblock %}

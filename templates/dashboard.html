@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Task Manager Pro{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="dashboard-header">
+        <h2 class="page-title">
+            <i class="fas fa-chart-bar"></i>
+            Dashboard Overview
+        </h2>
+        <p class="page-subtitle">Monitor your task progress and productivity</p>
+    </div>
+
+    {% if stats %}
+    <div class="stats-overview">
+        <div class="stat-card large">
+            <div class="stat-icon total">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Total Tasks</h3>
+                <p class="stat-number">{{ stats.total }}</p>
+                <p class="stat-description">All tasks in your system</p>
+            </div>
+        </div>
+
+        <div class="stat-card large">
+            <div class="stat-icon pending">
+                <i class="fas fa-clock"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Pending Tasks</h3>
+                <p class="stat-number">{{ stats.pending }}</p>
+                <p class="stat-description">Tasks awaiting completion</p>
+            </div>
+        </div>
+
+        <div class="stat-card large">
+            <div class="stat-icon completed">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Completed</h3>
+                <p class="stat-number">{{ stats.completed }}</p>
+                <p class="stat-description">Successfully finished tasks</p>
+            </div>
+        </div>
+
+        <div class="stat-card large">
+            <div class="stat-icon progress">
+                <i class="fas fa-percentage"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Completion Rate</h3>
+                <p class="stat-number">{{ "%.1f"|format(stats.completion_rate) }}%</p>
+                <p class="stat-description">Overall progress</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="priority-breakdown">
+        <h3 class="section-title">
+            <i class="fas fa-flag"></i>
+            Priority Distribution
+        </h3>
+        <div class="priority-grid">
+            <div class="priority-card high">
+                <div class="priority-header">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h4>High Priority</h4>
+                </div>
+                <p class="priority-count">{{ stats.high_priority }}</p>
+                <p class="priority-label">Urgent tasks</p>
+            </div>
+
+            <div class="priority-card medium">
+                <div class="priority-header">
+                    <i class="fas fa-minus-circle"></i>
+                    <h4>Medium Priority</h4>
+                </div>
+                <p class="priority-count">{{ stats.medium_priority }}</p>
+                <p class="priority-label">Normal tasks</p>
+            </div>
+
+            <div class="priority-card low">
+                <div class="priority-header">
+                    <i class="fas fa-arrow-down"></i>
+                    <h4>Low Priority</h4>
+                </div>
+                <p class="priority-count">{{ stats.low_priority }}</p>
+                <p class="priority-label">Optional tasks</p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if recent_tasks %}
+    <div class="recent-tasks">
+        <h3 class="section-title">
+            <i class="fas fa-history"></i>
+            Recent Tasks
+        </h3>
+        <div class="recent-tasks-list">
+            {% for task in recent_tasks %}
+            <div class="recent-task-item">
+                <div class="task-info">
+                    <h4 class="task-title">{{ task.title }}</h4>
+                    <div class="task-meta">
+                        <span class="task-date">
+                            <i class="fas fa-calendar"></i>
+                            {{ task.date }}
+                        </span>
+                        <span class="task-priority {{ task.priority if task.priority else 'medium' }}">
+                            <i class="fas fa-flag"></i>
+                            {{ task.priority if task.priority else 'medium' }}
+                        </span>
+                        <span class="task-status {{ task.status if task.status else 'pending' }}">
+                            <i class="fas fa-circle"></i>
+                            {{ task.status if task.status else 'pending' }}
+                        </span>
+                    </div>
+                </div>
+                <div class="task-actions">
+                    <a href="/tasks" class="btn btn-sm btn-primary">View Details</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="view-all-section">
+            <a href="/tasks" class="btn btn-secondary">
+                <i class="fas fa-list"></i>
+                View All Tasks
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="quick-actions">
+        <h3 class="section-title">
+            <i class="fas fa-bolt"></i>
+            Quick Actions
+        </h3>
+        <div class="actions-grid">
+            <a href="/" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-upload"></i>
+                </div>
+                <h4>Upload Image</h4>
+                <p>Extract tasks from datasheets or schedules</p>
+            </a>
+
+            <a href="/tasks" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <h4>Add Task</h4>
+                <p>Create a new task manually</p>
+            </a>
+
+            <a href="/tasks?status=pending" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h4>View Pending</h4>
+                <p>See all pending tasks</p>
+            </a>
+
+            <a href="/tasks?priority=high" class="action-card">
+                <div class="action-icon">
+                    <i class="fas fa-exclamation"></i>
+                </div>
+                <h4>High Priority</h4>
+                <p>Focus on urgent tasks</p>
+            </a>
+        </div>
+    </div>
+
+    {% if error %}
+    <div class="error-message">
+        <i class="fas fa-exclamation-triangle"></i>
+        {{ error }}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
