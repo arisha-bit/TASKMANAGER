@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # MongoDB connection string
-MONGO_URI = "mongodb+srv://arisha31:arudontask31@cluster0.4kp9pe0.mongodb.net/"
+MONGO_URI = "YOUR URL"
 
 try:
     client = MongoClient(MONGO_URI)
